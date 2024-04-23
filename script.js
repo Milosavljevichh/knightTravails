@@ -17,24 +17,20 @@ function Node(value, nextNode) {
     }
 };
 
-let movesMade = 0;
-let maxMovesMade = 0;
-let depthLevel = 0;
-let adjacencyList = [];
-//we will create an adjacency list from available moves and then loop through them using depthLevel
-//so first we'll loop only through first move of the starting position, then first move of the first move, then 
-//first move of the second move and so on... 
-const allowedMoves = 63;
-//it takes 63 moves for knight to go across the whole board
 
 function knightMoves(start, end) {
+    let movesMade = 0;
+    let maxMovesMade = 0;
+    let adjacencyList = [];
+    let depthLevel = 0;
     let endFound = false;
 
     let currentSquare = Node(start, null);
     adjacencyList.push(currentSquare);
 
     let head;
-    
+    let initStart = start;
+
     while (!endFound) {
         start = adjacencyList[depthLevel].value;
         r = start[0];
@@ -44,7 +40,7 @@ function knightMoves(start, end) {
         //creating a linked list out of available moves
         availableMoves = availableMoves.map(mapFunc);
         function mapFunc(move) {
-            if (JSON.stringify(move) !== JSON.stringify(start)) {
+            if (JSON.stringify(move) !== JSON.stringify(start) && JSON.stringify(move) !== JSON.stringify(initStart)) {
                 let availableMove = Node(move, null);
                 head = adjacencyList[depthLevel];
                 while (head.nextNode !== null) {
@@ -54,25 +50,52 @@ function knightMoves(start, end) {
                 head = adjacencyList[depthLevel];
             };
         };
+        //checking if the current adjacency list heads are the searched position
         for (let i=depthLevel; i < adjacencyList.length;i++) {
             if (JSON.stringify(adjacencyList[i].value) === JSON.stringify(end)) {
-                console.log(adjacencyList[i])
-                console.log('found it')
+                // console.log(adjacencyList[i])
+                // console.log('found it')
                 endFound = true;
+                break;
                 };
             };
-
+        //if they are, we break the loop
         if (endFound) break;
+        //if not, we add the currents positions available moves to adjacency list
         while (head.nextNode !== null) {
             let newPos = Node(head.nextNode.value, null);
             adjacencyList.push(newPos);
             head = head.nextNode;
         };
         depthLevel++;
-        console.log(adjacencyList.shift())
     };
 
-    console.log(adjacencyList)
+    let parentMove = end;
+    let path = [];
+    
+    while (JSON.stringify(parentMove) !== JSON.stringify(initStart)) {
+        for (let i = adjacencyList.length-1; i>=0; i--) {
+            head = adjacencyList[i];
+            while (head.nextNode !== null) {
+                if (JSON.stringify(head.nextNode.value) === JSON.stringify(parentMove)) {
+                    parentMove = adjacencyList[i].value;
+                    movesMade++;
+                    // console.log(parentMove);
+                    path.push(parentMove);
+                    break;
+                }
+                head = head.nextNode;
+            };
+        }
+    }
+    
+    console.log(`You made it in ${movesMade} moves! Here's your path:`)
+    for (let i = path.length-1; i>=0; i--) {
+        console.log(path[i])
+    };
+    console.log('---------------------')
+    console.log(end)
+    console.log('')
 };
 
 function findMoves(r, c) {
@@ -88,6 +111,8 @@ function findMoves(r, c) {
     return arr;
 };
 
-knightMoves([1,1], [7,7])
+knightMoves([1,1], [1,3])
 
-// knightMoves([1,1], [0,1])
+knightMoves([1,1], [0,1])
+knightMoves([1,1], [7,7])
+knightMoves([1,1], [1,1])
