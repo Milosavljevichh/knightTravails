@@ -115,4 +115,6 @@ knightMoves([1,1], [1,3])
 
 knightMoves([1,1], [0,1])
 knightMoves([1,1], [7,7])
-knightMoves([1,1], [1,1])
+knightMoves([5,7], [6,3])
+knightMoves([0,0], [7,7])
+knightMoves([7,7], [7,6])
