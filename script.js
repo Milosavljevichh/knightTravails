@@ -10,6 +10,7 @@ const chessboard = [
     [0,0,0,0,0,0,0,0]  //7
 ];
 
+//this is the factory for the node which will be every move that is possible from the current
 function Node(value, nextNode) {
     return {
         value: value,
@@ -20,7 +21,6 @@ function Node(value, nextNode) {
 
 function knightMoves(start, end) {
     let movesMade = 0;
-    let maxMovesMade = 0;
     let adjacencyList = [];
     let depthLevel = 0;
     let endFound = false;
@@ -31,10 +31,12 @@ function knightMoves(start, end) {
     let head;
     let initStart = start;
 
+    //we will repeat this until we find the end position
     while (!endFound) {
         start = adjacencyList[depthLevel].value;
         r = start[0];
         c = start[1];
+        //we find the possible moves from the current position
         let availableMoves = findMoves(r, c);
 
         //creating a linked list out of available moves
@@ -50,11 +52,9 @@ function knightMoves(start, end) {
                 head = adjacencyList[depthLevel];
             };
         };
-        //checking if the current adjacency list heads are the searched position
+        //checking if the current moves we've found are the searched position
         for (let i=depthLevel; i < adjacencyList.length;i++) {
             if (JSON.stringify(adjacencyList[i].value) === JSON.stringify(end)) {
-                // console.log(adjacencyList[i])
-                // console.log('found it')
                 endFound = true;
                 break;
                 };
@@ -67,20 +67,24 @@ function knightMoves(start, end) {
             adjacencyList.push(newPos);
             head = head.nextNode;
         };
+        //we move onto the next move in the list
         depthLevel++;
     };
 
+    //we'll find the shortest path starting from the end position (last move we've made)
     let parentMove = end;
     let path = [];
     
+    //we repeat this until our last move made is the same as the starting position
     while (JSON.stringify(parentMove) !== JSON.stringify(initStart)) {
         for (let i = adjacencyList.length-1; i>=0; i--) {
             head = adjacencyList[i];
             while (head.nextNode !== null) {
+                //in our adjecency list, only one move leads to our parentMove
+                //when we find it, we set it as the new parentMove
                 if (JSON.stringify(head.nextNode.value) === JSON.stringify(parentMove)) {
                     parentMove = adjacencyList[i].value;
                     movesMade++;
-                    // console.log(parentMove);
                     path.push(parentMove);
                     break;
                 }
@@ -89,6 +93,7 @@ function knightMoves(start, end) {
         }
     }
     
+    //printing the solution
     console.log(`You made it in ${movesMade} moves! Here's your path:`)
     for (let i = path.length-1; i>=0; i--) {
         console.log(path[i])
@@ -98,6 +103,7 @@ function knightMoves(start, end) {
     console.log('')
 };
 
+//function which finds knights available moves
 function findMoves(r, c) {
     let arr = [];
     if(chessboard[r+2] !== undefined && chessboard[r+2][c+1] !== undefined) arr.push([r+2, c+1]);
@@ -111,8 +117,8 @@ function findMoves(r, c) {
     return arr;
 };
 
+//test cases
 knightMoves([1,1], [1,3])
-
 knightMoves([1,1], [0,1])
 knightMoves([1,1], [7,7])
 knightMoves([5,7], [6,3])
